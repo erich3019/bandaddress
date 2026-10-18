@@ -275,7 +275,7 @@ Nachgeführt sind die Hilfsskripte, `db/init/10-app-rolle.sh`, `appsettings.json
 
 Weil Issuer und Audience ändern, sind alle bisherigen Tokens ungültig: Nach dem Update muss sich jeder neu anmelden.
 
-Geprüft: `dotnet build`, alle 122 Integrationstests, `npm run lint`, `tsc --noEmit`; lokale Migration der bestehenden Daten wie unten beschrieben, danach Start aller vier Container, Login-Seite (200) und 401 ohne Token. Nicht geprüft: die Migration auf dem Server.
+Geprüft: `dotnet build`, alle 122 Integrationstests, `npm run lint`, `tsc --noEmit`; lokale Migration der bestehenden Daten wie unten beschrieben, danach Start aller vier Container, Login-Seite (200) und 401 ohne Token. Auf dem Server am 18. Oktober 2026 ebenso migriert, zusätzlich mit einer Sicherung per `pg_dumpall` vorher; danach alle Adressen und Benutzer in der Datenbank `bandaddress`, Login-Seite (200), 401 ohne Token und erfolgreiche Anmeldung des n8n-Workflows (200).
 
 ### Bestehende Installation übernehmen
 
