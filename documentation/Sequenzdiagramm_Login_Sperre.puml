@@ -129,7 +129,7 @@ browser --> user : «Zu viele Fehlversuche. Die Anmeldung\nmit dieser E-Mail-Adr
 
 alt Ein Administrator entsperrt vor Ablauf der 5 Minuten
   admin -> browser : auf /benutzer bei «Gesperrt bis …»\nauf «Entsperren» klicken
-  browser -> nginx : POST /api/backend/users/{id}/unlock\nSession-Cookie + Header x-adressverwaltung
+  browser -> nginx : POST /api/backend/users/{id}/unlock\nSession-Cookie + Header x-bandaddress
   nginx -> next : Weiterleitung
   activate next
   next -> next : Proxy: Pfad, Header und Origin prüfen,\nBackend-JWT aus dem Cookie lesen

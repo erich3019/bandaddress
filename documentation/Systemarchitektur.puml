@@ -51,11 +51,11 @@ cloud "Externe Dienste" as ext {
 
 rectangle "Docker Compose" as compose {
 
-  node "nginx  (adressverwaltung-nginx)\nnginx:alpine · :80 → :443 · TLS-Terminierung" as nginx {
+  node "nginx  (bandaddress-nginx)\nnginx:alpine · :80 → :443 · TLS-Terminierung" as nginx {
     component "Reverse Proxy\nRouting nach Pfad-Präfix" as proxy
   }
 
-  node "frontend  (adressverwaltung-frontend)\nNext.js 15 · Node 22 · :3000 (nur intern)" as frontend {
+  node "frontend  (bandaddress-frontend)\nNext.js 15 · Node 22 · :3000 (nur intern)" as frontend {
     component "middleware.ts\nRoute-Schutz · CSP mit Nonce" as mw
     component "App Router\nServer + Client Components" as pages
     component "NextAuth.js\n/api/auth/*\nSession-Cookie (JWT, 8 h)" as nextauth
@@ -63,7 +63,7 @@ rectangle "Docker Compose" as compose {
     component "Proxy /api/backend/*\nhängt den Bearer-Token an\n(CSRF-Schutz: Header + Origin)" as bproxy
   }
 
-  node "backend  (adressverwaltung-backend)\nASP.NET Core 10 · :8080 (Host :5000)" as backend {
+  node "backend  (bandaddress-backend)\nASP.NET Core 10 · :8080 (Host :5000)" as backend {
     component "JWT-Bearer-Authentifizierung\n+ TokenUserValidator\n(Rolle, Token-Version)" as jwt
     component "AuthController\n/auth/login · /auth/register\n/auth/logout · Kontosperre" as authc
     component "OData-Controller\n/odata/Adressen · /odata/Cities\n(ODataCrudController<T>)" as odata
@@ -73,7 +73,7 @@ rectangle "Docker Compose" as compose {
     component "AdresseDbContext\nEF Core 10 · Audit-Felder\nEnsureCreated + SchemaUpgrader\n+ DbSeeder" as dbctx
   }
 
-  database "db  (adressverwaltung-db)\nPostgreSQL 16 · :5432\nVolume: postgres-data" as db {
+  database "db  (bandaddress-db)\nPostgreSQL 16 · :5432\nVolume: postgres-data" as db {
     component "Adressen · Cities\nUsers · Settings" as tables
   }
 }
@@ -120,7 +120,7 @@ notify --> dbctx : NotificationEmail\nlesen
 notify ..> smtp : E-Mail-\nBenachrichtigungen
 
 ' ── Persistenz ───────────────────────────────────────────────
-dbctx --> tables : Npgsql\n(Rolle adressverwaltung_app)
+dbctx --> tables : Npgsql\n(Rolle bandaddress_app)
 
 ' ── Skripte ──────────────────────────────────────────────────
 usersh ..> tables : docker exec psql\n(Superuser postgres)

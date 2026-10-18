@@ -19,13 +19,14 @@ docker compose logs -f backend
 
 - App: https://localhost (cert expected in `nginx/ssl/`, not in git — issued with `mkcert` so browsers trust it; port 80 redirects to 443)
 - Backend directly: http://localhost:5000 (e.g. `/odata/Adressen`)
-- Postgres: localhost:5432, database `adressverwaltung`
+- Postgres: localhost:5432, database `bandaddress`
+- The compose project name is fixed (`name: bandaddress`), so containers are `bandaddress-*` and the data volume is `bandaddress_postgres-data` regardless of the checkout folder name.
 - The frontend container is not published on a host port; it is only reachable through nginx.
-- The backend connects as the non-superuser role `adressverwaltung_app` (`APP_DB_PASSWORD`). `db/init/10-app-rolle.sh` creates it on an empty volume; for an existing volume run `scripts/create_db_role.sh` once (also after changing the password). `postgres` stays for administration and the helper scripts.
+- The backend connects as the non-superuser role `bandaddress_app` (`APP_DB_PASSWORD`). `db/init/10-app-rolle.sh` creates it on an empty volume; for an existing volume run `scripts/create_db_role.sh` once (also after changing the password). `postgres` stays for administration and the helper scripts.
 - Backend and Postgres are published on `127.0.0.1` only.
 - Seeded login when the Users table is empty: `Seed:AdminEmail` (default `admin@example.com`) / `Seed:AdminPassword`. Without a configured password `DbSeeder` generates a random one and logs it once; there is no hardcoded default.
 
-### Backend (`backend/AdressverwaltungApi`)
+### Backend (`backend/BandaddressApi`)
 
 ```bash
 dotnet build
@@ -54,11 +55,11 @@ dotnet test                                              # needs Docker running
 dotnet test --filter "FullyQualifiedName~AdressenODataTests"
 ```
 
-`backend/AdressverwaltungApi.Tests` holds xUnit integration tests for the OData API: `WebApplicationFactory<Program>` against a throwaway PostgreSQL container (Testcontainers), with `IEmailService` replaced by a fake. Tests share one factory (collection `Api`) and `ODataTestBase` empties the tables before each test. Both backend projects target net10.0. The frontend has no tests.
+`backend/BandaddressApi.Tests` holds xUnit integration tests for the OData API: `WebApplicationFactory<Program>` against a throwaway PostgreSQL container (Testcontainers), with `IEmailService` replaced by a fake. Tests share one factory (collection `Api`) and `ODataTestBase` empties the tables before each test. Both backend projects target net10.0. The frontend has no tests.
 
 ### Helper scripts (`scripts/`)
 
-All operate on the running `adressverwaltung-db` container via `docker exec`:
+All operate on the running `bandaddress-db` container via `docker exec`:
 
 - `create_user.sh [email "Display Name" password [User|Admin]]` — inserts a user directly into `Users`, generating an ASP.NET Core PasswordHasher V3 compatible hash in Python. The role defaults to `User`.
 - `reset_password.sh [password]` — resets the password of `admin@example.com`, bumps `TokenVersion` (which revokes that user's tokens) and clears the lock flag `LockedUntil`.

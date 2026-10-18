@@ -2,6 +2,10 @@
 # neben dieser Datei (nicht in Git, Vorlage: .env.example). Docker Compose liest
 # sie automatisch und setzt sie unten als ${VARIABLE} ein.
 
+# Projektname: bestimmt die Namen von Netzwerk und Volume (bandaddress_postgres-data),
+# unabhängig vom Namen des Ordners
+name: bandaddress
+
 services:
 
   # ============================================================
@@ -9,13 +13,13 @@ services:
   # ============================================================
   db:
     image: postgres:16-alpine
-    container_name: adressverwaltung-db
+    container_name: bandaddress-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: adressverwaltung
+      POSTGRES_DB: bandaddress
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt in .env}
-      # Passwort der Rolle "adressverwaltung_app", mit der sich das Backend verbindet
+      # Passwort der Rolle "bandaddress_app", mit der sich das Backend verbindet
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD fehlt in .env}
     # Nur lokal erreichbar, nicht aus dem Netzwerk
     ports:
@@ -36,9 +40,9 @@ services:
   # ============================================================
   backend:
     build:
-      context: ./backend/AdressverwaltungApi
+      context: ./backend/BandaddressApi
       dockerfile: Dockerfile
-    container_name: adressverwaltung-backend
+    container_name: bandaddress-backend
     restart: unless-stopped
     # Keine Rechteausweitung im Container, keine Linux-Capabilities
     security_opt:
@@ -50,12 +54,12 @@ services:
       - "127.0.0.1:5000:8080"
     environment:
       # Eigene Rolle ohne Superuser-Rechte; "postgres" bleibt der Verwaltung vorbehalten
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=adressverwaltung;Username=adressverwaltung_app;Password=${APP_DB_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bandaddress;Username=bandaddress_app;Password=${APP_DB_PASSWORD}"
       ASPNETCORE_ENVIRONMENT: Production
       # JWT-Konfiguration
       Jwt__Key: ${JWT_KEY:?JWT_KEY fehlt in .env}
-      Jwt__Issuer: AdressverwaltungApi
-      Jwt__Audience: AdressverwaltungFrontend
+      Jwt__Issuer: BandaddressApi
+      Jwt__Audience: BandaddressFrontend
       Jwt__ExpiresInHours: "8"
       # SMTP-Einstellungen (optional – nur wenn E-Mail-Benachrichtigungen aktiviert)
       SmtpSettings__Host: asmtp.mail.hostpoint.ch
@@ -76,7 +80,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: adressverwaltung-frontend
+    container_name: bandaddress-frontend
     restart: unless-stopped
     # Keine Rechteausweitung im Container, keine Linux-Capabilities
     security_opt:
@@ -106,7 +110,7 @@ services:
   # ============================================================
   nginx:
     image: nginx:alpine
-    container_name: adressverwaltung-nginx
+    container_name: bandaddress-nginx
     restart: unless-stopped
     ports:
       - "80:80"    # HTTP  → wird auf HTTPS weitergeleitet

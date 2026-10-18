@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
 # create_db_role.sh
-# Richtet in einer BESTEHENDEN Datenbank die Rolle "adressverwaltung_app" ein,
+# Richtet in einer BESTEHENDEN Datenbank die Rolle "bandaddress_app" ein,
 # mit der sich das Backend verbindet, und übergibt ihr die vorhandenen Tabellen.
 # Bei einer neuen Datenbank (leeres Volume) geschieht das beim ersten Start von selbst.
 #
@@ -15,7 +15,7 @@
 
 set -e
 
-DB_CONTAINER="adressverwaltung-db"
+DB_CONTAINER="bandaddress-db"
 
 if ! docker ps --format '{{.Names}}' | grep -q "^${DB_CONTAINER}$"; then
     echo "❌ Fehler: Container '$DB_CONTAINER' läuft nicht."
@@ -28,5 +28,5 @@ fi
 docker exec "$DB_CONTAINER" sh /docker-entrypoint-initdb.d/10-app-rolle.sh
 
 echo ""
-echo "✅ Rolle 'adressverwaltung_app' eingerichtet."
+echo "✅ Rolle 'bandaddress_app' eingerichtet."
 echo ""

@@ -406,13 +406,13 @@
 <h3>Empfohlene VS Code Extensions</h3>
 <ul><li><code>ms-dotnettools.csdevkit</code> — C# Dev Kit (Sprachunterstützung, Tests)</li><li><code>esbenp.prettier-vscode</code> — Formatierung (2 Leerzeichen, einfache Anführungszeichen, Strichpunkte)</li><li><code>dbaeumer.vscode-eslint</code> — ESLint für TypeScript</li><li><code>ms-azuretools.vscode-docker</code> — Docker-Integration</li><li><code>humao.rest-client</code> — HTTP-Anfragen aus VS Code senden</li></ul>
 <h2 id="kap2-2">2.2 Projekt holen</h2>
-<div class="code-block"><div class="code-label">Terminal</div><pre><code>git clone git@github.com:erich3019/adressverwaltung.git
-cd adressverwaltung</code></pre></div>
-<div class="code-block"><div class="code-label">Projektstruktur</div><pre><code>adressverwaltung/
+<div class="code-block"><div class="code-label">Terminal</div><pre><code>git clone git@github.com:erich3019/adressverwaltung.git bandaddress
+cd bandaddress</code></pre></div>
+<div class="code-block"><div class="code-label">Projektstruktur</div><pre><code>bandaddress/
 ├── backend/
-│   ├── Adressverwaltung.sln
-│   ├── AdressverwaltungApi/          ← API (Controller, Modelle, Dienste)
-│   └── AdressverwaltungApi.Tests/    ← Integrationstests
+│   ├── Bandaddress.sln
+│   ├── BandaddressApi/               ← API (Controller, Modelle, Dienste)
+│   └── BandaddressApi.Tests/         ← Integrationstests
 ├── frontend/                         ← Next.js (app/, components/, lib/, types/)
 ├── nginx/
 │   ├── nginx.conf                    ← Reverse Proxy
@@ -432,7 +432,7 @@ cd adressverwaltung</code></pre></div>
 # z.B. openssl rand -hex 24
 POSTGRES_PASSWORD=ERSETZEN
 
-# Passwort der Datenbankrolle "adressverwaltung_app", mit der sich das Backend verbindet.
+# Passwort der Datenbankrolle "bandaddress_app", mit der sich das Backend verbindet.
 # Nur Buchstaben und Ziffern verwenden (der Wert steht in einem Connection-String).
 # Neue Datenbank: wird beim ersten Start gesetzt. Bestehende Datenbank oder neues
 # Passwort: ./scripts/create_db_role.sh
@@ -466,9 +466,9 @@ APP_URL=</code></pre></div>
 <div class="code-block"><div class="code-label">Terminal – .env anlegen</div><pre><code>cp .env.example .env
 openssl rand -hex 24      # je ein Wert für POSTGRES_PASSWORD und APP_DB_PASSWORD
 openssl rand -base64 48   # je ein Wert für JWT_KEY und NEXTAUTH_SECRET</code></pre></div>
-<table><thead><tr><th>Variable</th><th>Verwendet für</th><th>Pflicht</th></tr></thead><tbody><tr><td><code>POSTGRES_PASSWORD</code></td><td>Passwort des Superusers <code>postgres</code> (Verwaltung, Hilfsskripte, PLZ-Import)</td><td>ja</td></tr><tr><td><code>APP_DB_PASSWORD</code></td><td>Passwort der Rolle <code>adressverwaltung_app</code>, mit der sich das Backend verbindet; nur Buchstaben und Ziffern</td><td>ja</td></tr><tr><td><code>JWT_KEY</code></td><td>Signaturschlüssel der Backend-Tokens, mindestens 32 Zeichen</td><td>ja</td></tr><tr><td><code>NEXTAUTH_SECRET</code></td><td>Verschlüsselung des Session-Cookies</td><td>ja</td></tr><tr><td><code>SEED_ADMIN_PASSWORD</code></td><td>Passwort des ersten Admin-Benutzers</td><td>nein</td></tr><tr><td><code>SMTP_USERNAME</code>, <code>SMTP_PASSWORD</code></td><td>Zugangsdaten für den Mailversand</td><td>nein</td></tr><tr><td><code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code></td><td>Google-Login</td><td>nein</td></tr><tr><td><code>APP_URL</code></td><td>Adresse, unter der die App im Browser aufgerufen wird; leer = <code>https://localhost</code></td><td>nein</td></tr></tbody></table>
+<table><thead><tr><th>Variable</th><th>Verwendet für</th><th>Pflicht</th></tr></thead><tbody><tr><td><code>POSTGRES_PASSWORD</code></td><td>Passwort des Superusers <code>postgres</code> (Verwaltung, Hilfsskripte, PLZ-Import)</td><td>ja</td></tr><tr><td><code>APP_DB_PASSWORD</code></td><td>Passwort der Rolle <code>bandaddress_app</code>, mit der sich das Backend verbindet; nur Buchstaben und Ziffern</td><td>ja</td></tr><tr><td><code>JWT_KEY</code></td><td>Signaturschlüssel der Backend-Tokens, mindestens 32 Zeichen</td><td>ja</td></tr><tr><td><code>NEXTAUTH_SECRET</code></td><td>Verschlüsselung des Session-Cookies</td><td>ja</td></tr><tr><td><code>SEED_ADMIN_PASSWORD</code></td><td>Passwort des ersten Admin-Benutzers</td><td>nein</td></tr><tr><td><code>SMTP_USERNAME</code>, <code>SMTP_PASSWORD</code></td><td>Zugangsdaten für den Mailversand</td><td>nein</td></tr><tr><td><code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code></td><td>Google-Login</td><td>nein</td></tr><tr><td><code>APP_URL</code></td><td>Adresse, unter der die App im Browser aufgerufen wird; leer = <code>https://localhost</code></td><td>nein</td></tr></tbody></table>
 <div class="box box-warn"><div class="box-title">Platzhalter ersetzen</div><p>Docker Compose bricht mit einer Meldung ab, wenn einer der vier Pflichtwerte fehlt. Das Backend startet ausserdem nicht, wenn <code>JWT_KEY</code> kürzer als 32 Zeichen ist. Der Wert <code>ERSETZEN</code> aus der Vorlage reicht also nicht.</p></div>
-<div class="box box-info"><div class="box-title">Zwei Datenbankbenutzer</div><p>Das Backend arbeitet nicht als Superuser <code>postgres</code>, sondern mit der Rolle <code>adressverwaltung_app</code>. Sie besitzt nur die Datenbank der Anwendung. Angelegt wird sie beim ersten Start mit leerem Volume (<code>db/init/10-app-rolle.sh</code>). Für eine bestehende Datenbank oder nach einem neuen <code>APP_DB_PASSWORD</code> genügt einmal <code>./scripts/create_db_role.sh</code>.</p></div>
+<div class="box box-info"><div class="box-title">Zwei Datenbankbenutzer</div><p>Das Backend arbeitet nicht als Superuser <code>postgres</code>, sondern mit der Rolle <code>bandaddress_app</code>. Sie besitzt nur die Datenbank der Anwendung. Angelegt wird sie beim ersten Start mit leerem Volume (<code>db/init/10-app-rolle.sh</code>). Für eine bestehende Datenbank oder nach einem neuen <code>APP_DB_PASSWORD</code> genügt einmal <code>./scripts/create_db_role.sh</code>.</p></div>
 <h3>TLS-Zertifikat mit mkcert</h3>
 <p>nginx braucht ein Zertifikat. Ein selbstsigniertes Zertifikat zeigt der Browser als «nicht sicher» an. <strong>mkcert</strong> legt eine lokale Zertifizierungsstelle an, trägt sie bei Betriebssystem und Browser als vertrauenswürdig ein und stellt damit ein Zertifikat für <code>localhost</code> aus:</p>
 <div class="code-block neue-seite"><div class="code-label">Terminal – Zertifikat erzeugen</div><pre><code>mkcert -install     # einmalig pro Rechner
@@ -483,7 +483,7 @@ docker compose ps
 
 # Logs des Backends verfolgen
 docker compose logs -f backend</code></pre></div>
-<table><thead><tr><th>Dienst</th><th>Adresse</th><th>Hinweis</th></tr></thead><tbody><tr><td>Applikation</td><td><code>https://localhost</code></td><td>Port 80 leitet auf 443 um</td></tr><tr><td>Backend direkt</td><td><code>http://localhost:5000</code></td><td>nur vom eigenen Rechner; alle Endpunkte ausser Login brauchen ein Token</td></tr><tr><td>PostgreSQL</td><td><code>localhost:5432</code></td><td>nur vom eigenen Rechner; Datenbank <code>adressverwaltung</code></td></tr><tr><td>Swagger</td><td><code>http://localhost:5000/swagger</code></td><td>nur bei lokalem Start in der Umgebung <code>Development</code></td></tr></tbody></table>
+<table><thead><tr><th>Dienst</th><th>Adresse</th><th>Hinweis</th></tr></thead><tbody><tr><td>Applikation</td><td><code>https://localhost</code></td><td>Port 80 leitet auf 443 um</td></tr><tr><td>Backend direkt</td><td><code>http://localhost:5000</code></td><td>nur vom eigenen Rechner; alle Endpunkte ausser Login brauchen ein Token</td></tr><tr><td>PostgreSQL</td><td><code>localhost:5432</code></td><td>nur vom eigenen Rechner; Datenbank <code>bandaddress</code></td></tr><tr><td>Swagger</td><td><code>http://localhost:5000/swagger</code></td><td>nur bei lokalem Start in der Umgebung <code>Development</code></td></tr></tbody></table>
 <h3>Erstes Login</h3>
 <p>Ist die Tabelle <code>Users</code> leer, legt das Backend beim Start den Benutzer <code>admin@example.com</code> mit der Rolle <code>Admin</code> an. Das Passwort stammt aus <code>SEED_ADMIN_PASSWORD</code>. Ist der Wert leer, erzeugt das Backend ein Zufallspasswort und schreibt es einmalig ins Log:</p>
 <div class="code-block"><div class="code-label">Terminal – Passwort aus dem Log lesen</div><pre><code>docker compose logs backend | grep "Admin-Benutzer"</code></pre></div>
@@ -907,7 +907,7 @@ using (var scope = app.Services.CreateScope())
   <h1 id="kap4h">4. Backend – ASP.NET Core 10</h1>
 <div class="learning-goals"><h4>Lernziele dieses Kapitels</h4><ul><li>Du kennst die Ordnerstruktur des Backends.</li><li>Du kannst OData-Abfragen formulieren.</li><li>Du kannst erklären, wie der generische Controller die CRUD-Logik für alle Entitäten liefert.</li><li>Du verstehst Login, Registrierung und Abmeldung und ihre Schutzmassnahmen.</li></ul></div>
 <h2 id="kap4-1">4.1 Projektstruktur</h2>
-<div class="code-block"><div class="code-label">backend/AdressverwaltungApi/</div><pre><code>AdressverwaltungApi/
+<div class="code-block"><div class="code-label">backend/BandaddressApi/</div><pre><code>BandaddressApi/
 ├── Controllers/
 │   ├── ODataCrudController.cs     ← Generische Basisklasse (GET/POST/PATCH/DELETE)
 │   ├── AdressenController.cs      ← Adressen + Benachrichtigung
@@ -1829,7 +1829,7 @@ async function weiterleiten(req: NextRequest, { params }: { params: Promise&lt;{
     },
   });
 }</code></pre></div>
-<table><thead><tr><th>Prüfung</th><th>Antwort bei Fehler</th><th>Grund</th></tr></thead><tbody><tr><td>Pfad beginnt mit <code>odata</code> oder <code>settings</code></td><td>404</td><td>Der Proxy ist kein allgemeiner Durchgang; <code>/auth</code> ist nicht erreichbar.</td></tr><tr><td>Header <code>x-adressverwaltung</code> vorhanden, <code>Origin</code> ist die eigene Adresse</td><td>403</td><td>Schutz vor Cross-Site-Request-Forgery</td></tr><tr><td>Session mit Backend-Token</td><td>401</td><td>Nicht angemeldet</td></tr></tbody></table>
+<table><thead><tr><th>Prüfung</th><th>Antwort bei Fehler</th><th>Grund</th></tr></thead><tbody><tr><td>Pfad beginnt mit <code>odata</code> oder <code>settings</code></td><td>404</td><td>Der Proxy ist kein allgemeiner Durchgang; <code>/auth</code> ist nicht erreichbar.</td></tr><tr><td>Header <code>x-bandaddress</code> vorhanden, <code>Origin</code> ist die eigene Adresse</td><td>403</td><td>Schutz vor Cross-Site-Request-Forgery</td></tr><tr><td>Session mit Backend-Token</td><td>401</td><td>Nicht angemeldet</td></tr></tbody></table>
 <div class="box box-danger"><div class="box-title">Was ist Cross-Site-Request-Forgery?</div><p>Der Proxy erkennt den Benutzer am Cookie, und Cookies schickt der Browser automatisch mit – auch wenn eine fremde Seite den Aufruf auslöst. Ohne Schutz könnte eine präparierte Seite im Namen des angemeldeten Benutzers Adressen löschen. Den eigenen Header kann eine fremde Seite nicht setzen: Der Browser verlangt dafür eine CORS-Freigabe, und die gibt es nicht.</p></div>
 <p><code>apiFetch</code> wählt den Weg nach dem Ort, an dem der Code läuft. Die Funktion arbeitet in beiden Welten – im Browser und auf dem Server:</p>
 <div class="code-block"><div class="code-label">lib/api.ts – apiFetch</div><pre><code>const IM_BROWSER = typeof window !== 'undefined';
@@ -1861,7 +1861,7 @@ async function apiFetch(url: string, init: RequestInit = {}): Promise&lt;Respons
 
   return response;
 }</code></pre></div>
-<table><thead><tr><th></th><th>Im Browser</th><th>Auf dem Server</th></tr></thead><tbody><tr><td>Ziel</td><td><code>/api/backend/…</code> (Proxy)</td><td><code>http://backend:8080/…</code> direkt</td></tr><tr><td>Anmeldung</td><td>Session-Cookie und Header <code>x-adressverwaltung</code></td><td><code>Authorization: Bearer …</code> aus <code>getServerSession</code></td></tr><tr><td>Bei 401</td><td><code>signOut</code> – zurück zur Login-Seite</td><td>Fehler an die aufrufende Seite</td></tr></tbody></table>
+<table><thead><tr><th></th><th>Im Browser</th><th>Auf dem Server</th></tr></thead><tbody><tr><td>Ziel</td><td><code>/api/backend/…</code> (Proxy)</td><td><code>http://backend:8080/…</code> direkt</td></tr><tr><td>Anmeldung</td><td>Session-Cookie und Header <code>x-bandaddress</code></td><td><code>Authorization: Bearer …</code> aus <code>getServerSession</code></td></tr><tr><td>Bei 401</td><td><code>signOut</code> – zurück zur Login-Seite</td><td>Fehler an die aufrufende Seite</td></tr></tbody></table>
 <div class="box box-tip"><div class="box-title">Neuer Backend-Bereich?</div><p>Soll der Browser einen neuen Pfad des Backends erreichen, zum Beispiel <code>/berichte</code>, gehört der Bereich in <code>ERLAUBTE_BEREICHE</code> des Proxys.</p></div>
 <h2 id="kap5-7">5.7 Ablauf: Login bis API-Aufruf</h2>
 <p>Das Sequenzdiagramm zeigt den gesamten Ablauf in 47 Schritten. Jeder Schritt ist in der Schulungsunterlage <code>documentation/Schulungsunterlage_Sequenzdiagramm.pdf</code> einzeln erklärt.</p>
@@ -2416,7 +2416,7 @@ limit_req_status 429;</code></pre></div>
   <h1 id="kap8h">8. Tests</h1>
 <div class="learning-goals"><h4>Lernziele dieses Kapitels</h4><ul><li>Du kannst die Backend-Tests ausführen.</li><li>Du verstehst, wie ein Integrationstest die API gegen eine echte Datenbank prüft.</li></ul></div>
 <h2 id="kap8-1">8.1 Aufbau</h2>
-<p>Das Projekt <code>backend/AdressverwaltungApi.Tests</code> enthält 122 Integrationstests. Sie starten die API im Speicher (<code>WebApplicationFactory&lt;Program&gt;</code>) und senden echte HTTP-Anfragen. Die Datenbank ist eine PostgreSQL-Instanz, die <strong>Testcontainers</strong> für jeden Testlauf als Wegwerf-Container startet. Der E-Mail-Versand ist durch einen <code>FakeEmailService</code> ersetzt.</p>
+<p>Das Projekt <code>backend/BandaddressApi.Tests</code> enthält 122 Integrationstests. Sie starten die API im Speicher (<code>WebApplicationFactory&lt;Program&gt;</code>) und senden echte HTTP-Anfragen. Die Datenbank ist eine PostgreSQL-Instanz, die <strong>Testcontainers</strong> für jeden Testlauf als Wegwerf-Container startet. Der E-Mail-Versand ist durch einen <code>FakeEmailService</code> ersetzt.</p>
 <div class="code-block"><div class="code-label">Terminal</div><pre><code>cd backend
 dotnet test                                                    # alle Tests (Docker muss laufen)
 dotnet test --filter "FullyQualifiedName~AdressenODataTests"   # eine Testklasse</code></pre></div>
@@ -2490,6 +2490,10 @@ public async Task Register_OhneToken_Liefert401_UndLegtKeinenBenutzerAn()
 # neben dieser Datei (nicht in Git, Vorlage: .env.example). Docker Compose liest
 # sie automatisch und setzt sie unten als ${VARIABLE} ein.
 
+# Projektname: bestimmt die Namen von Netzwerk und Volume (bandaddress_postgres-data),
+# unabhängig vom Namen des Ordners
+name: bandaddress
+
 services:
 
   # ============================================================
@@ -2497,13 +2501,13 @@ services:
   # ============================================================
   db:
     image: postgres:16-alpine
-    container_name: adressverwaltung-db
+    container_name: bandaddress-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: adressverwaltung
+      POSTGRES_DB: bandaddress
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt in .env}
-      # Passwort der Rolle "adressverwaltung_app", mit der sich das Backend verbindet
+      # Passwort der Rolle "bandaddress_app", mit der sich das Backend verbindet
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD fehlt in .env}
     # Nur lokal erreichbar, nicht aus dem Netzwerk
     ports:
@@ -2524,9 +2528,9 @@ services:
   # ============================================================
   backend:
     build:
-      context: ./backend/AdressverwaltungApi
+      context: ./backend/BandaddressApi
       dockerfile: Dockerfile
-    container_name: adressverwaltung-backend
+    container_name: bandaddress-backend
     restart: unless-stopped
     # Keine Rechteausweitung im Container, keine Linux-Capabilities
     security_opt:
@@ -2538,12 +2542,12 @@ services:
       - "127.0.0.1:5000:8080"
     environment:
       # Eigene Rolle ohne Superuser-Rechte; "postgres" bleibt der Verwaltung vorbehalten
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=adressverwaltung;Username=adressverwaltung_app;Password=${APP_DB_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bandaddress;Username=bandaddress_app;Password=${APP_DB_PASSWORD}"
       ASPNETCORE_ENVIRONMENT: Production
       # JWT-Konfiguration
       Jwt__Key: ${JWT_KEY:?JWT_KEY fehlt in .env}
-      Jwt__Issuer: AdressverwaltungApi
-      Jwt__Audience: AdressverwaltungFrontend
+      Jwt__Issuer: BandaddressApi
+      Jwt__Audience: BandaddressFrontend
       Jwt__ExpiresInHours: "8"
       # SMTP-Einstellungen (optional – nur wenn E-Mail-Benachrichtigungen aktiviert)
       SmtpSettings__Host: asmtp.mail.hostpoint.ch
@@ -2564,7 +2568,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: adressverwaltung-frontend
+    container_name: bandaddress-frontend
     restart: unless-stopped
     # Keine Rechteausweitung im Container, keine Linux-Capabilities
     security_opt:
@@ -2594,7 +2598,7 @@ services:
   # ============================================================
   nginx:
     image: nginx:alpine
-    container_name: adressverwaltung-nginx
+    container_name: bandaddress-nginx
     restart: unless-stopped
     ports:
       - "80:80"    # HTTP  → wird auf HTTPS weitergeleitet
@@ -2610,7 +2614,7 @@ services:
 
 volumes:
   postgres-data:</code></pre></div>
-<table><thead><tr><th>Stelle</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>${POSTGRES_PASSWORD:?…}</code></td><td>Wert aus <code>.env</code>; fehlt er, bricht Compose mit der Meldung ab.</td></tr><tr><td><code>${SMTP_USERNAME:-}</code></td><td>Wert aus <code>.env</code>; fehlt er, bleibt die Variable leer.</td></tr><tr><td><code>127.0.0.1:5000:8080</code></td><td>Der Port ist nur vom eigenen Rechner erreichbar.</td></tr><tr><td><code>expose: "3000"</code></td><td>Das Frontend ist nur im Docker-Netz erreichbar, also nur über nginx.</td></tr><tr><td><code>depends_on … service_healthy</code></td><td>Das Backend startet erst, wenn die Datenbank bereit ist.</td></tr><tr><td><code>volumes: postgres-data</code></td><td>Die Daten überleben einen Neustart der Container.</td></tr><tr><td><code>Host=db</code></td><td>Im Docker-Netz heissen die Dienste wie in der Compose-Datei.</td></tr><tr><td><code>Username=adressverwaltung_app</code></td><td>Das Backend arbeitet mit einer eigenen Rolle, nicht als Superuser.</td></tr><tr><td><code>./db/init:/docker-entrypoint-initdb.d</code></td><td>Skripte in diesem Ordner führt PostgreSQL beim ersten Start mit leerem Volume aus; hier entsteht die Rolle des Backends.</td></tr><tr><td><code>cap_drop: ALL</code>, <code>no-new-privileges</code></td><td>Der Container gibt alle Sonderrechte ab und kann keine neuen erlangen.</td></tr></tbody></table>
+<table><thead><tr><th>Stelle</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>name: bandaddress</code></td><td>Projektname; Container ohne eigenen Namen, das Netzwerk und das Volume <code>bandaddress_postgres-data</code> tragen ihn als Präfix</td></tr><tr><td><code>${POSTGRES_PASSWORD:?…}</code></td><td>Wert aus <code>.env</code>; fehlt er, bricht Compose mit der Meldung ab.</td></tr><tr><td><code>${SMTP_USERNAME:-}</code></td><td>Wert aus <code>.env</code>; fehlt er, bleibt die Variable leer.</td></tr><tr><td><code>127.0.0.1:5000:8080</code></td><td>Der Port ist nur vom eigenen Rechner erreichbar.</td></tr><tr><td><code>expose: "3000"</code></td><td>Das Frontend ist nur im Docker-Netz erreichbar, also nur über nginx.</td></tr><tr><td><code>depends_on … service_healthy</code></td><td>Das Backend startet erst, wenn die Datenbank bereit ist.</td></tr><tr><td><code>volumes: postgres-data</code></td><td>Die Daten überleben einen Neustart der Container.</td></tr><tr><td><code>Host=db</code></td><td>Im Docker-Netz heissen die Dienste wie in der Compose-Datei.</td></tr><tr><td><code>Username=bandaddress_app</code></td><td>Das Backend arbeitet mit einer eigenen Rolle, nicht als Superuser.</td></tr><tr><td><code>./db/init:/docker-entrypoint-initdb.d</code></td><td>Skripte in diesem Ordner führt PostgreSQL beim ersten Start mit leerem Volume aus; hier entsteht die Rolle des Backends.</td></tr><tr><td><code>cap_drop: ALL</code>, <code>no-new-privileges</code></td><td>Der Container gibt alle Sonderrechte ab und kann keine neuen erlangen.</td></tr></tbody></table>
 <h2 id="kap11-2">11.2 Wichtige Befehle</h2>
 <div class="code-block"><div class="code-label">Terminal</div><pre><code>docker compose up --build -d         # bauen und starten
 docker compose ps                    # Status
@@ -2620,15 +2624,15 @@ docker compose down                  # stoppen, Daten bleiben erhalten
 docker compose down -v               # stoppen und Datenbank löschen
 
 docker compose restart nginx                                                   # nach dem Neubau von Backend oder Frontend
-docker exec adressverwaltung-nginx nginx -s reload                             # nginx-Konfiguration neu laden
-docker exec -it adressverwaltung-db psql -U postgres -d adressverwaltung       # SQL-Konsole</code></pre></div>
+docker exec bandaddress-nginx nginx -s reload                                  # nginx-Konfiguration neu laden
+docker exec -it bandaddress-db psql -U postgres -d bandaddress                 # SQL-Konsole</code></pre></div>
 <div class="box box-danger"><div class="box-title">down -v löscht die Datenbank</div><p>Die Option <code>-v</code> entfernt das Volume mit allen Adressen, Städten und Benutzern. Danach beginnt der nächste Start mit einer leeren Datenbank und einem neuen Admin-Passwort.</p></div>
 <div class="chapter-summary"><h4>Zusammenfassung Kapitel 11</h4><ul><li>Compose setzt die Werte aus <code>.env</code> ein und startet vier Dienste.</li><li>Nur nginx ist von aussen erreichbar.</li><li><code>down</code> behält die Daten, <code>down -v</code> löscht sie.</li></ul></div>
 </section>
 <section id="kap12">
   <div class="chapter-num">Kapitel 12</div>
   <h1 id="kap12h">12. Häufige Fehler und Lösungen</h1>
-<table><thead><tr><th>Symptom</th><th>Ursache</th><th>Lösung</th></tr></thead><tbody><tr><td><code>docker compose up</code> meldet «POSTGRES_PASSWORD fehlt in .env»</td><td><code>.env</code> fehlt oder ist unvollständig</td><td><code>cp .env.example .env</code> und die vier Pflichtwerte setzen</td></tr><tr><td>Backend startet nicht: «JWT-Schlüssel … zu kurz oder ein Platzhalter»</td><td><code>JWT_KEY</code> kürzer als 32 Zeichen</td><td>Wert mit <code>openssl rand -base64 48</code> erzeugen</td></tr><tr><td>Backend-Log: <code>password authentication failed for user "adressverwaltung_app"</code> oder <code>role "adressverwaltung_app" does not exist</code></td><td>Die Datenbank bestand schon, bevor es die Rolle gab, oder <code>APP_DB_PASSWORD</code> wurde geändert</td><td><code>./scripts/create_db_role.sh</code> ausführen, danach <code>docker compose restart backend</code></td></tr><tr><td>Hilfsskript oder Import: <code>password authentication failed for user "postgres"</code></td><td><code>POSTGRES_PASSWORD</code> wurde geändert, aber das Volume enthält noch das alte Passwort</td><td>Passwort in der Datenbank mit <code>ALTER USER postgres PASSWORD '…'</code> anpassen oder <code>docker compose down -v</code></td></tr><tr><td>Browser zeigt «nicht sicher»</td><td>Zertifikat ist selbstsigniert oder die mkcert-Zertifizierungsstelle fehlt</td><td><code>mkcert -install</code>, Zertifikat neu ausstellen, nginx neu laden, Browser neu starten</td></tr><tr><td>Frontend-Build: <code>"/app/public": not found</code></td><td>Verzeichnis <code>frontend/public</code> fehlt</td><td>Aktuellen Stand holen (<code>git pull</code>); das Verzeichnis enthält eine Datei <code>.gitkeep</code></td></tr><tr><td>Login schlägt fehl, Passwort unbekannt</td><td>Zufallspasswort beim ersten Start</td><td><code>docker compose logs backend | grep "Admin-Benutzer"</code> oder <code>./scripts/reset_password.sh</code></td></tr><tr><td>Antwort 429 beim Anmelden</td><td>Mehr als 10 Versuche pro Minute (nginx) oder drei Fehlversuche für dieselbe E-Mail-Adresse (Backend)</td><td>Eine Minute beziehungsweise 5 Minuten warten; ein Admin hebt die Sperre in der Benutzerverwaltung auf («Entsperren»). Ein Neustart des Backends hebt sie nur für unbekannte Adressen auf</td></tr><tr><td>Die Anwendung springt unerwartet zur Login-Seite</td><td>Das Backend hat mit 401 geantwortet: Token abgelaufen (8 Stunden), auf einem anderen Gerät abgemeldet, Passwort zurückgesetzt oder <code>JWT_KEY</code> geändert</td><td>Neu anmelden</td></tr><tr><td>«Fehler beim Speichern» im Formular</td><td>Validierung im Backend, oder die Rolle reicht nicht (403)</td><td>Netzwerk-Tab des Browsers und Backend-Log prüfen</td></tr><tr><td>Einstellungen lassen sich nicht ändern</td><td>Der Benutzer hat die Rolle <code>User</code></td><td>Als <code>Admin</code> anmelden</td></tr><tr><td>Die Login-Seite ist blau, obwohl eine andere Farbe gewählt ist</td><td>Ohne Anmeldung sind die Einstellungen nicht lesbar</td><td>Kein Fehler; nach dem Login gilt die gewählte Farbe</td></tr><tr><td>Aufruf von <code>/api/backend/…</code> liefert 403 «Aufruf nicht erlaubt.»</td><td>Der Header <code>x-adressverwaltung</code> fehlt, weil der Aufruf nicht über <code>apiFetch</code> läuft</td><td>Alle Aufrufe über <code>lib/api.ts</code> führen</td></tr><tr><td>Browser-Konsole: «Refused to load … Content Security Policy»</td><td>Eine Quelle von einer fremden Adresse</td><td>Quelle in <code>middleware.ts</code> und <code>nginx.conf</code> eintragen (Kapitel 7.2)</td></tr><tr><td>PLZ-Wertehilfe zeigt nichts</td><td>Städteverzeichnis nicht importiert</td><td>Import nach Anhang A ausführen</td></tr><tr><td>OData-Abfrage liefert 400</td><td>Eigenschaft in PascalCase geschrieben</td><td>camelCase verwenden: <code>ort</code>, <code>postalCode</code></td></tr><tr><td>Neues Feld im Modell fehlt in der Datenbank</td><td><code>EnsureCreated</code> ändert bestehende Datenbanken nicht</td><td>Spalte im <code>SchemaUpgrader</code> ergänzen oder <code>docker compose down -v</code> und neu starten</td></tr><tr><td>Keine Benachrichtigungs-E-Mail</td><td>Keine Adresse in den Einstellungen oder SMTP nicht konfiguriert</td><td>Adresse unter «Einstellungen» eintragen; <code>SMTP_*</code> in <code>.env</code> und <code>SmtpSettings__Host</code> in der Compose-Datei setzen; Backend-Log prüfen</td></tr><tr><td>502 Bad Gateway nach <code>docker compose up --build</code></td><td>nginx kennt noch die Adressen der alten Container</td><td><code>docker compose restart nginx</code></td></tr></tbody></table>
+<table><thead><tr><th>Symptom</th><th>Ursache</th><th>Lösung</th></tr></thead><tbody><tr><td><code>docker compose up</code> meldet «POSTGRES_PASSWORD fehlt in .env»</td><td><code>.env</code> fehlt oder ist unvollständig</td><td><code>cp .env.example .env</code> und die vier Pflichtwerte setzen</td></tr><tr><td>Backend startet nicht: «JWT-Schlüssel … zu kurz oder ein Platzhalter»</td><td><code>JWT_KEY</code> kürzer als 32 Zeichen</td><td>Wert mit <code>openssl rand -base64 48</code> erzeugen</td></tr><tr><td>Backend-Log: <code>password authentication failed for user "bandaddress_app"</code> oder <code>role "bandaddress_app" does not exist</code></td><td>Die Datenbank bestand schon, bevor es die Rolle gab, oder <code>APP_DB_PASSWORD</code> wurde geändert</td><td><code>./scripts/create_db_role.sh</code> ausführen, danach <code>docker compose restart backend</code></td></tr><tr><td>Hilfsskript oder Import: <code>password authentication failed for user "postgres"</code></td><td><code>POSTGRES_PASSWORD</code> wurde geändert, aber das Volume enthält noch das alte Passwort</td><td>Passwort in der Datenbank mit <code>ALTER USER postgres PASSWORD '…'</code> anpassen oder <code>docker compose down -v</code></td></tr><tr><td>Browser zeigt «nicht sicher»</td><td>Zertifikat ist selbstsigniert oder die mkcert-Zertifizierungsstelle fehlt</td><td><code>mkcert -install</code>, Zertifikat neu ausstellen, nginx neu laden, Browser neu starten</td></tr><tr><td>Frontend-Build: <code>"/app/public": not found</code></td><td>Verzeichnis <code>frontend/public</code> fehlt</td><td>Aktuellen Stand holen (<code>git pull</code>); das Verzeichnis enthält eine Datei <code>.gitkeep</code></td></tr><tr><td>Login schlägt fehl, Passwort unbekannt</td><td>Zufallspasswort beim ersten Start</td><td><code>docker compose logs backend | grep "Admin-Benutzer"</code> oder <code>./scripts/reset_password.sh</code></td></tr><tr><td>Antwort 429 beim Anmelden</td><td>Mehr als 10 Versuche pro Minute (nginx) oder drei Fehlversuche für dieselbe E-Mail-Adresse (Backend)</td><td>Eine Minute beziehungsweise 5 Minuten warten; ein Admin hebt die Sperre in der Benutzerverwaltung auf («Entsperren»). Ein Neustart des Backends hebt sie nur für unbekannte Adressen auf</td></tr><tr><td>Die Anwendung springt unerwartet zur Login-Seite</td><td>Das Backend hat mit 401 geantwortet: Token abgelaufen (8 Stunden), auf einem anderen Gerät abgemeldet, Passwort zurückgesetzt oder <code>JWT_KEY</code> geändert</td><td>Neu anmelden</td></tr><tr><td>«Fehler beim Speichern» im Formular</td><td>Validierung im Backend, oder die Rolle reicht nicht (403)</td><td>Netzwerk-Tab des Browsers und Backend-Log prüfen</td></tr><tr><td>Einstellungen lassen sich nicht ändern</td><td>Der Benutzer hat die Rolle <code>User</code></td><td>Als <code>Admin</code> anmelden</td></tr><tr><td>Die Login-Seite ist blau, obwohl eine andere Farbe gewählt ist</td><td>Ohne Anmeldung sind die Einstellungen nicht lesbar</td><td>Kein Fehler; nach dem Login gilt die gewählte Farbe</td></tr><tr><td>Aufruf von <code>/api/backend/…</code> liefert 403 «Aufruf nicht erlaubt.»</td><td>Der Header <code>x-bandaddress</code> fehlt, weil der Aufruf nicht über <code>apiFetch</code> läuft</td><td>Alle Aufrufe über <code>lib/api.ts</code> führen</td></tr><tr><td>Browser-Konsole: «Refused to load … Content Security Policy»</td><td>Eine Quelle von einer fremden Adresse</td><td>Quelle in <code>middleware.ts</code> und <code>nginx.conf</code> eintragen (Kapitel 7.2)</td></tr><tr><td>PLZ-Wertehilfe zeigt nichts</td><td>Städteverzeichnis nicht importiert</td><td>Import nach Anhang A ausführen</td></tr><tr><td>OData-Abfrage liefert 400</td><td>Eigenschaft in PascalCase geschrieben</td><td>camelCase verwenden: <code>ort</code>, <code>postalCode</code></td></tr><tr><td>Neues Feld im Modell fehlt in der Datenbank</td><td><code>EnsureCreated</code> ändert bestehende Datenbanken nicht</td><td>Spalte im <code>SchemaUpgrader</code> ergänzen oder <code>docker compose down -v</code> und neu starten</td></tr><tr><td>Keine Benachrichtigungs-E-Mail</td><td>Keine Adresse in den Einstellungen oder SMTP nicht konfiguriert</td><td>Adresse unter «Einstellungen» eintragen; <code>SMTP_*</code> in <code>.env</code> und <code>SmtpSettings__Host</code> in der Compose-Datei setzen; Backend-Log prüfen</td></tr><tr><td>502 Bad Gateway nach <code>docker compose up --build</code></td><td>nginx kennt noch die Adressen der alten Container</td><td><code>docker compose restart nginx</code></td></tr></tbody></table>
 </section>
 <section id="anhA">
   <div class="chapter-num">Anhang A</div>
@@ -2639,13 +2643,13 @@ docker exec -it adressverwaltung-db psql -U postgres -d adressverwaltung       #
 <div class="code-block"><div class="code-label">Terminal</div><pre><code>pip install psycopg2-binary
 set -a; . ./.env; set +a      # stellt POSTGRES_PASSWORD bereit
 CSV_PATH=migration/AMTOVZ_CSV_LV95.csv python3 scripts/import_cities.py</code></pre></div>
-<table><thead><tr><th>Variable</th><th>Standard</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>DB_HOST</code>, <code>DB_PORT</code></td><td><code>localhost</code>, <code>5432</code></td><td>Datenbankserver</td></tr><tr><td><code>DB_NAME</code>, <code>DB_USER</code></td><td><code>adressverwaltung</code>, <code>postgres</code></td><td>Datenbank und Benutzer</td></tr><tr><td><code>DB_PASS</code></td><td>Wert von <code>POSTGRES_PASSWORD</code></td><td>Passwort</td></tr><tr><td><code>CSV_PATH</code></td><td><code>AMTOVZ_CSV_LV95.csv</code></td><td>Pfad zur CSV-Datei</td></tr><tr><td><code>CREATED_BY</code></td><td><code>import_script</code></td><td>Wert für <code>CreatedBy</code></td></tr></tbody></table>
+<table><thead><tr><th>Variable</th><th>Standard</th><th>Bedeutung</th></tr></thead><tbody><tr><td><code>DB_HOST</code>, <code>DB_PORT</code></td><td><code>localhost</code>, <code>5432</code></td><td>Datenbankserver</td></tr><tr><td><code>DB_NAME</code>, <code>DB_USER</code></td><td><code>bandaddress</code>, <code>postgres</code></td><td>Datenbank und Benutzer</td></tr><tr><td><code>DB_PASS</code></td><td>Wert von <code>POSTGRES_PASSWORD</code></td><td>Passwort</td></tr><tr><td><code>CSV_PATH</code></td><td><code>AMTOVZ_CSV_LV95.csv</code></td><td>Pfad zur CSV-Datei</td></tr><tr><td><code>CREATED_BY</code></td><td><code>import_script</code></td><td>Wert für <code>CreatedBy</code></td></tr></tbody></table>
 </section>
 <section id="anhB">
   <div class="chapter-num">Anhang B</div>
   <h1 id="anhBh">Anhang B: Hilfsskripte</h1>
 <p>Die Skripte arbeiten über <code>docker exec</code> direkt in der laufenden Datenbank, als Superuser <code>postgres</code>. Die beiden Benutzer-Skripte erzeugen den Passwort-Hash im selben Format wie das Backend.</p>
-<table><thead><tr><th>Skript</th><th>Aufruf</th><th>Zweck</th></tr></thead><tbody><tr><td><code>create_user.sh</code></td><td><code>./scripts/create_user.sh email "Name" passwort [User|Admin]</code> oder ohne Argumente mit Abfrage</td><td>Benutzer anlegen; ohne Angabe mit der Rolle <code>User</code></td></tr><tr><td><code>reset_password.sh</code></td><td><code>./scripts/reset_password.sh [passwort]</code></td><td>Passwort von <code>admin@example.com</code> neu setzen; widerruft dessen Tokens</td></tr><tr><td><code>create_db_role.sh</code></td><td><code>./scripts/create_db_role.sh</code></td><td>Rolle <code>adressverwaltung_app</code> in einer bestehenden Datenbank anlegen oder ihr Passwort neu setzen</td></tr></tbody></table>
+<table><thead><tr><th>Skript</th><th>Aufruf</th><th>Zweck</th></tr></thead><tbody><tr><td><code>create_user.sh</code></td><td><code>./scripts/create_user.sh email "Name" passwort [User|Admin]</code> oder ohne Argumente mit Abfrage</td><td>Benutzer anlegen; ohne Angabe mit der Rolle <code>User</code></td></tr><tr><td><code>reset_password.sh</code></td><td><code>./scripts/reset_password.sh [passwort]</code></td><td>Passwort von <code>admin@example.com</code> neu setzen; widerruft dessen Tokens</td></tr><tr><td><code>create_db_role.sh</code></td><td><code>./scripts/create_db_role.sh</code></td><td>Rolle <code>bandaddress_app</code> in einer bestehenden Datenbank anlegen oder ihr Passwort neu setzen</td></tr></tbody></table>
 <div class="box box-info"><div class="box-title">Benutzer in der Anwendung verwalten</div><p>Ein Admin legt Benutzer auf der Seite «Benutzer» an, ändert Name, Rolle und Passwort, hebt eine Anmeldesperre auf und löscht Benutzer. Über die API geht dasselbe mit <code>/users</code>; <code>POST /auth/register</code> bleibt für das Anlegen bestehen (mit <code>Authorization: Bearer …</code>, optionales Feld <code>role</code>).</p></div>
 <div class="code-block"><div class="code-label">Token holen und API aufrufen</div><pre><code>curl -s -X POST http://localhost:5000/auth/login \
   -H "Content-Type: application/json" \

@@ -16,9 +16,9 @@
 set -e
 
 # ── Konfiguration (aus docker-compose.yml) ───────────────────
-DB_CONTAINER="adressverwaltung-db"
+DB_CONTAINER="bandaddress-db"
 DB_USER="postgres"
-DB_NAME="adressverwaltung"
+DB_NAME="bandaddress"
 TARGET_EMAIL="admin@example.com"
 
 # Adresse der App für den Hinweis am Schluss: APP_URL aus der .env im Projektstamm,

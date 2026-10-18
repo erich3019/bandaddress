@@ -230,7 +230,7 @@
 
   <tr><td nowrap valign="top">O-08</td>
     <td valign="top">Das Backend verband sich als Datenbank-Superuser <code>postgres</code>.</td>
-    <td valign="top">Eigene Rolle <code>adressverwaltung_app</code> ohne Superuser-Rechte, die nur die Datenbank der Anwendung besitzt. Neue Datenbanken erhalten sie beim ersten Start, bestehende über <code>./scripts/create_db_role.sh</code>. Neues Geheimnis <code>APP_DB_PASSWORD</code> in <code>.env</code>.</td>
+    <td valign="top">Eigene Rolle <code>bandaddress_app</code> ohne Superuser-Rechte, die nur die Datenbank der Anwendung besitzt. Neue Datenbanken erhalten sie beim ersten Start, bestehende über <code>./scripts/create_db_role.sh</code>. Neues Geheimnis <code>APP_DB_PASSWORD</code> in <code>.env</code>.</td>
     <td valign="top">Behoben</td></tr>
 </table>
 
@@ -326,7 +326,7 @@
   <tr><td valign="top"><code>GET /odata/Cities</code> ohne <code>$top</code></td><td valign="top">100 Zeilen und <code>@odata.nextLink</code></td></tr>
   <tr><td valign="top">Browser: Abmelden, danach das alte Session-Cookie wieder einsetzen</td><td valign="top">das Backend weist das Token ab (401)</td></tr>
   <tr><td valign="top">Browser: Benutzer mit Rolle <code>User</code> auf der Einstellungsseite</td><td valign="top">Formular gesperrt mit Hinweis; <code>PUT /settings</code> ergibt 403</td></tr>
-  <tr><td valign="top">Verbindung des Backends zur Datenbank</td><td valign="top">als <code>adressverwaltung_app</code> (kein Superuser, darf keine Datenbanken und Rollen anlegen)</td></tr>
+  <tr><td valign="top">Verbindung des Backends zur Datenbank</td><td valign="top">als <code>bandaddress_app</code> (kein Superuser, darf keine Datenbanken und Rollen anlegen)</td></tr>
   <tr><td valign="top">Bestehende Datenbank nach dem Start</td><td valign="top">Spalten <code>Role</code> und <code>TokenVersion</code> ergänzt, vorhandene Benutzer sind <code>Admin</code></td></tr>
   <tr><td valign="top">Oberfläche vor und nach der Migration auf Tailwind CSS 4 (Bildschirmfotos)</td><td valign="top">gleiches Aussehen; die Aktionsspalte der Städteliste bricht nicht mehr um</td></tr>
 </table>

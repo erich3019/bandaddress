@@ -1,0 +1,53 @@
+using Microsoft.EntityFrameworkCore;
+using BandaddressApi.Data;
+
+namespace BandaddressApi;
+
+/// <summary>
+/// Zieht Spalten nach, die es in einer bestehenden Datenbank noch nicht gibt.
+/// Nötig, weil EnsureCreated() eine vorhandene Datenbank nicht verändert.
+/// Jede Anweisung lässt sich beliebig oft ausführen.
+/// </summary>
+public static class SchemaUpgrader
+{
+    public static void Apply(AdresseDbContext db)
+    {
+        // Rollen: Benutzer, die es vor der Einführung schon gab, hatten vollen Zugriff
+        // und behalten ihn als "Admin". Danach gilt für neue Zeilen der Standard "User".
+        db.Database.ExecuteSqlRaw("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                               WHERE table_name = 'Users' AND column_name = 'Role') THEN
+                    ALTER TABLE "Users" ADD COLUMN "Role" character varying(20) NOT NULL DEFAULT 'Admin';
+                    ALTER TABLE "Users" ALTER COLUMN "Role" SET DEFAULT 'User';
+                END IF;
+            END $$;
+            """);
+
+        // Token-Widerruf: Zähler, der bei der Abmeldung erhöht wird
+        db.Database.ExecuteSqlRaw("""
+            ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS "TokenVersion" integer NOT NULL DEFAULT 0;
+            """);
+
+        // Sperrkennzeichen: Ende der Anmeldesperre nach Fehlversuchen (leer = nicht gesperrt)
+        db.Database.ExecuteSqlRaw("""
+            ALTER TABLE "Users" ADD COLUMN IF NOT EXISTS "LockedUntil" timestamp without time zone NULL;
+            """);
+
+        // E-Mail-Adresse einer Adresse (freiwillig, leer = keine)
+        db.Database.ExecuteSqlRaw("""
+            ALTER TABLE "Adressen" ADD COLUMN IF NOT EXISTS "Email" character varying(256) NULL;
+            """);
+
+        // Eindeutige E-Mail-Adresse: mehrere Adressen ohne E-Mail (NULL) bleiben erlaubt
+        db.Database.ExecuteSqlRaw("""
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_Adressen_Email" ON "Adressen" ("Email");
+            """);
+
+        // Akzentfarbe der Oberfläche
+        db.Database.ExecuteSqlRaw("""
+            ALTER TABLE "Settings" ADD COLUMN IF NOT EXISTS "AccentColor" character varying(20) NOT NULL DEFAULT 'blue';
+            """);
+    }
+}

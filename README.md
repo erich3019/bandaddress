@@ -50,7 +50,7 @@ mkdir -p nginx/ssl
 mkcert -cert-file nginx/ssl/cert.pem -key-file nginx/ssl/key.pem localhost 127.0.0.1 ::1
 ```
 
-Läuft der Stack bereits, lädt `docker exec adressverwaltung-nginx nginx -s reload` das neue Zertifikat. Den Browser danach neu starten.
+Läuft der Stack bereits, lädt `docker exec bandaddress-nginx nginx -s reload` das neue Zertifikat. Den Browser danach neu starten.
 
 Ohne mkcert funktioniert auch ein selbstsigniertes Zertifikat; der Browser zeigt die Seite dann als «nicht sicher» an:
 
@@ -72,7 +72,7 @@ openssl rand -base64 48   # je ein Wert für JWT_KEY und NEXTAUTH_SECRET
 
 Docker Compose liest `.env` automatisch und bricht mit einer Meldung ab, wenn `POSTGRES_PASSWORD`, `APP_DB_PASSWORD`, `JWT_KEY` oder `NEXTAUTH_SECRET` fehlen.
 
-Das Backend verbindet sich mit der Rolle `adressverwaltung_app`, nicht als Superuser `postgres`. Bei einer neuen Datenbank entsteht die Rolle beim ersten Start. Bei einer bestehenden Datenbank einmalig `./scripts/create_db_role.sh` ausführen (auch nach einer Änderung von `APP_DB_PASSWORD`).
+Das Backend verbindet sich mit der Rolle `bandaddress_app`, nicht als Superuser `postgres`. Bei einer neuen Datenbank entsteht die Rolle beim ersten Start. Bei einer bestehenden Datenbank einmalig `./scripts/create_db_role.sh` ausführen (auch nach einer Änderung von `APP_DB_PASSWORD`).
 
 ### 3. Services starten
 
@@ -88,7 +88,7 @@ Nach dem Start:
 
 - **App:** https://localhost (Port 80 leitet auf 443 um)
 - **Backend direkt:** http://localhost:5000 (z.B. `/odata/Adressen`, erfordert Bearer-Token)
-- **PostgreSQL:** `localhost:5432`, Datenbank `adressverwaltung`
+- **PostgreSQL:** `localhost:5432`, Datenbank `bandaddress`
 
 Backend und PostgreSQL sind nur an `127.0.0.1` gebunden; aus dem Netzwerk ist ausschliesslich nginx erreichbar.
 
@@ -109,7 +109,7 @@ Sicherheitsrelevante Werte stehen in `.env`; `docker-compose.yml` setzt sie als 
 | Variable in `.env` | Verwendet für | Pflicht |
 |--------------------|---------------|---------|
 | `POSTGRES_PASSWORD` | Passwort des Datenbank-Superusers `postgres` (Container `db`, Verwaltung und Skripte) | ja |
-| `APP_DB_PASSWORD` | Passwort der Rolle `adressverwaltung_app` (Verbindungszeichenfolge des Backends) | ja |
+| `APP_DB_PASSWORD` | Passwort der Rolle `bandaddress_app` (Verbindungszeichenfolge des Backends) | ja |
 | `JWT_KEY` | `Jwt__Key`: Signatur der Bearer-Tokens, mindestens 32 Zeichen | ja |
 | `NEXTAUTH_SECRET` | Verschlüsselung der NextAuth-Session | ja |
 | `SEED_ADMIN_PASSWORD` | `Seed__AdminPassword`: Admin-Passwort beim ersten Start | nein |
@@ -197,11 +197,11 @@ Property-Namen sind in Payloads und OData-Abfragen camelCase (`ort`, `postalCode
 ### Backend starten
 
 ```bash
-cd backend/AdressverwaltungApi
+cd backend/BandaddressApi
 # Geheimnisse kommen aus der Umgebung, nicht aus appsettings.json
 set -a; . ../../.env; set +a
 export Jwt__Key="$JWT_KEY"
-export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=adressverwaltung;Username=adressverwaltung_app;Password=$APP_DB_PASSWORD"
+export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=bandaddress;Username=bandaddress_app;Password=$APP_DB_PASSWORD"
 ASPNETCORE_ENVIRONMENT=Development dotnet run
 # Backend:    http://localhost:5000
 # Swagger UI: http://localhost:5000/swagger (nur in Development)
@@ -234,8 +234,8 @@ Client-Komponenten rufen die API über relative URLs auf (`/odata/...`) und sind
 ## Projektstruktur
 
 ```
-adressverwaltung/
-├── backend/AdressverwaltungApi/
+bandaddress/
+├── backend/BandaddressApi/
 │   ├── Controllers/      ODataCrudController<T>, Adressen, Cities, Auth, Settings
 │   ├── Models/           Adresse, City, User, Settings (alle: AuditableEntity)
 │   ├── Data/             AdresseDbContext (inkl. Audit-Felder)

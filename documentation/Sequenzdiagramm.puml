@@ -86,7 +86,7 @@ note right of browser
   ?$filter=startswith(postalCode,…)
 end note
 
-browser -> nginx : POST /api/backend/odata/Adressen\nSession-Cookie + Header x-adressverwaltung
+browser -> nginx : POST /api/backend/odata/Adressen\nSession-Cookie + Header x-bandaddress
 nginx -> next : Weiterleitung (alle übrigen Pfade)
 activate next
 next -> next : Proxy: Pfad, Header und Origin prüfen,\nBackend-JWT aus dem Cookie lesen

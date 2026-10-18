@@ -15,7 +15,7 @@ Regeln:
 Konfiguration via Umgebungsvariablen (oder direkte Anpassung der DEFAULTS):
   DB_HOST   Datenbankserver     (Standard: localhost)
   DB_PORT   Port                (Standard: 5432)
-  DB_NAME   Datenbankname       (Standard: adressverwaltung)
+  DB_NAME   Datenbankname       (Standard: bandaddress)
   DB_USER   Datenbankbenutzer   (Standard: postgres)
   DB_PASS   Passwort            (Standard: POSTGRES_PASSWORD, sonst muss es gesetzt werden)
   CSV_PATH  Pfad zur CSV-Datei  (Standard: AMTOVZ_CSV_LV95.csv)
@@ -43,7 +43,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 DB_HOST    = os.getenv("DB_HOST",    "localhost")
 DB_PORT    = int(os.getenv("DB_PORT", "5432"))
-DB_NAME    = os.getenv("DB_NAME",    "adressverwaltung")
+DB_NAME    = os.getenv("DB_NAME",    "bandaddress")
 DB_USER    = os.getenv("DB_USER",    "postgres")
 # DB_PASS oder, falls nicht gesetzt, POSTGRES_PASSWORD aus der .env des Projekts
 DB_PASS    = os.getenv("DB_PASS") or os.getenv("POSTGRES_PASSWORD", "")

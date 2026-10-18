@@ -20,7 +20,7 @@
 <h2>1. Ziel dieser Unterlage</h2>
 <p>Diese Unterlage erklärt jeden der 64 nummerierten Schritte im Sequenzdiagramm zum Login mit Sperrmechanismus (<code>documentation/Sequenzdiagramm_Login_Sperre.svg</code>, Quelle <code>Sequenzdiagramm_Login_Sperre.puml</code>). Das Diagramm zeigt, was bei falschen Passwörtern geschieht, wie die Sperre entsteht, wie sie wirkt und wie sie wieder endet.</p>
 <p>Nach dem Durcharbeiten können Sie erklären, wann ein Benutzer gesperrt wird, wo die Sperre gespeichert ist, wer davon erfährt und auf welchen Wegen sie endet – und Sie wissen zu jedem Schritt, wo er im Code steht.</p>
-<p>Zu jedem Schritt finden Sie drei Angaben: <b>Was passiert</b> beschreibt den Vorgang, <b>Im Code</b> nennt die Datei und die Stelle, <b>Warum so</b> begründet die Lösung oder weist auf eine Stolperfalle hin. Pfade im Frontend beziehen sich auf <code>frontend/</code>, Pfade im Backend auf <code>backend/AdressverwaltungApi/</code>.</p>
+<p>Zu jedem Schritt finden Sie drei Angaben: <b>Was passiert</b> beschreibt den Vorgang, <b>Im Code</b> nennt die Datei und die Stelle, <b>Warum so</b> begründet die Lösung oder weist auf eine Stolperfalle hin. Pfade im Frontend beziehen sich auf <code>frontend/</code>, Pfade im Backend auf <code>backend/BandaddressApi/</code>.</p>
 <p>Den Login ohne Sperre und das Erfassen einer Adresse beschreibt die Unterlage <code>Schulungsunterlage_Sequenzdiagramm.pdf</code>. Die Schritte 1 bis 4 und 59 bis 64 sind dort ausführlicher erklärt.</p>
 
 <h2>2. So lesen Sie das Diagramm</h2>
@@ -258,7 +258,7 @@
 
 <h2 style="page-break-before: always">8. Ablauf D: Ende der Sperre (Schritte 36 bis 49)</h2>
 <p>Die Sperre endet auf einem von zwei Wegen: Ein Administrator löscht das Sperrkennzeichen von Hand (Schritte 36 bis 48), oder die 5 Minuten laufen ab (Schritt 49).</p>
-<p><img src="Schulungsunterlage_Login_Sperre_D.png" width="640" height="344"></p>
+<p><img src="Schulungsunterlage_Login_Sperre_D.png" width="640" height="351"></p>
 
 <h3>Schritt 36: «Entsperren» in der Benutzerverwaltung</h3>
 <p class="dir"><b>Beteiligte:</b> Administrator → Browser</p>
@@ -268,7 +268,7 @@
 
 <h3>Schritt 37: POST /api/backend/users/{id}/unlock</h3>
 <p class="dir"><b>Beteiligte:</b> Browser → nginx</p>
-<p><b>Was passiert:</b> Der Browser ruft den Proxy der eigenen Anwendung auf. Er sendet das Session-Cookie und den Header <code>x-adressverwaltung</code> mit, aber kein Token.</p>
+<p><b>Was passiert:</b> Der Browser ruft den Proxy der eigenen Anwendung auf. Er sendet das Session-Cookie und den Header <code>x-bandaddress</code> mit, aber kein Token.</p>
 <p><b>Im Code:</b> <code>frontend/lib/api.ts</code>: <code>entsperreBenutzer(id)</code> über <code>apiRequest</code> und <code>apiFetch</code>.</p>
 <p><b>Warum so:</b> Der Browser kennt das Backend-Token nicht. Er spricht nur mit Next.js.</p>
 

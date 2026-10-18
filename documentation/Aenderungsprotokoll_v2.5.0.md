@@ -256,6 +256,46 @@ Nicht geprüft: die Seiten auf dem Server in einem Browser (nur mit `curl`), die
 
 Für eine bestehende Installation unter `https://localhost` ist nichts zu tun. Auf einem Server: `APP_URL` in `.env` eintragen, ein Zertifikat für diese Adresse in `nginx/ssl` ablegen, danach `docker compose up -d`.
 
+## 9. Nachtrag vom 18. Oktober 2026: Technischer Name «bandaddress»
+
+Das Projekt liegt neu im Ordner `bandaddress`, passend zu den anderen Projekten auf demselben Rechner. Alle technischen Namen folgen: Container, Datenbank, Datenbankrolle, .NET-Projekte und Namespaces. Der Anzeigename «Adressverwaltung» in der Oberfläche, in den E-Mails und in den Dokumenten bleibt. Die Versionsnummer bleibt 2.5.0.
+
+| Bisher | Neu |
+| --- | --- |
+| Compose-Projekt aus dem Ordnernamen | fest `name: bandaddress` in `docker-compose.yml`, Volume `bandaddress_postgres-data` |
+| Container `adressverwaltung-db`, `-backend`, `-frontend`, `-nginx` | `bandaddress-db`, `-backend`, `-frontend`, `-nginx` |
+| Datenbank `adressverwaltung` | `bandaddress` |
+| Rolle `adressverwaltung_app` | `bandaddress_app` |
+| `backend/Adressverwaltung.sln`, `AdressverwaltungApi`, `AdressverwaltungApi.Tests` (Ordner, Projekte, Namespaces) | `backend/Bandaddress.sln`, `BandaddressApi`, `BandaddressApi.Tests` |
+| JWT `Issuer`/`Audience` `AdressverwaltungApi`/`AdressverwaltungFrontend` | `BandaddressApi`/`BandaddressFrontend` |
+| Header des Proxys `x-adressverwaltung` | `x-bandaddress` |
+| npm-Paket `adressverwaltung-frontend` | `bandaddress-frontend` |
+
+Nachgeführt sind die Hilfsskripte, `db/init/10-app-rolle.sh`, `appsettings.json`, `.env.example`, README, CLAUDE.md, Tutorial, Sicherheitsbericht, beide Schulungsunterlagen (je ein PNG mit dem neuen Header), alle drei Diagramme sowie die zugehörigen SVG und PDF. Die älteren Änderungsprotokolle und die Clean-Code-Analyse beschreiben frühere Stände und bleiben unverändert.
+
+Weil Issuer und Audience ändern, sind alle bisherigen Tokens ungültig: Nach dem Update muss sich jeder neu anmelden.
+
+Geprüft: `dotnet build`, alle 122 Integrationstests, `npm run lint`, `tsc --noEmit`; lokale Migration der bestehenden Daten wie unten beschrieben, danach Start aller vier Container, Login-Seite (200) und 401 ohne Token. Nicht geprüft: die Migration auf dem Server.
+
+### Bestehende Installation übernehmen
+
+Die Daten liegen im Volume des alten Compose-Projekts (Name = alter Ordnername, hier `adressverwaltung`). Das alte Volume bleibt als Sicherung stehen.
+
+```bash
+docker compose -p adressverwaltung down
+docker volume create --label com.docker.compose.project=bandaddress \
+  --label com.docker.compose.volume=postgres-data bandaddress_postgres-data
+docker run --rm -v adressverwaltung_postgres-data:/from:ro \
+  -v bandaddress_postgres-data:/to alpine cp -a /from/. /to/
+docker compose up -d db
+docker exec bandaddress-db psql -U postgres -d postgres \
+  -c 'ALTER DATABASE adressverwaltung RENAME TO bandaddress' \
+  -c 'ALTER ROLE adressverwaltung_app RENAME TO bandaddress_app'
+docker compose up --build -d
+```
+
+Das Passwort der Rolle bleibt beim Umbenennen erhalten (SCRAM). Läuft alles, kann das alte Volume mit `docker volume rm adressverwaltung_postgres-data` entfernt werden.
+
 ---
 
 Restrisiken und akzeptierte Punkte stehen in `documentation/Sicherheitsbericht.pdf`, Abschnitt 4.
